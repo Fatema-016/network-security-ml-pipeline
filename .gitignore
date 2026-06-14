@@ -1,0 +1,14 @@
+netwsecvenv/
+.env
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+.DS_Store
+.vscode/
+*.egg-info/
+dist/
+build/
+.eggs/
+mlruns/
+*.log
