@@ -1,0 +1,20 @@
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+seaborn
+xgboost
+imbalanced-learn
+pymongo[srv]
+python-dotenv
+pyyaml
+dill
+mlflow==2.17.2
+dagshub
+shap
+fastapi
+uvicorn
+jinja2
+python-multipart
+-e .
