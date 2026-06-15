@@ -20,3 +20,5 @@ attack_count.py
 Wednesday-workingHours.pcap_ISCX.csv
 Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
 Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
+artifacts/
+test_connection.py
