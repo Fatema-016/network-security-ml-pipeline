@@ -7,6 +7,7 @@ __pycache__/
 .DS_Store
 .vscode/
 *.egg-info/
+networksecurity.egg-info/
 dist/
 build/
 .eggs/
