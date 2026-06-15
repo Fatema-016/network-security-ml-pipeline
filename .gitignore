@@ -13,3 +13,10 @@ build/
 mlruns/
 *.log
 logs/
+test_mongodb.py
+drop_db.py
+estimate_size.py
+attack_count.py
+Wednesday-workingHours.pcap_ISCX.csv
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
