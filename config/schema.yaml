@@ -1,0 +1,25 @@
+columns:
+  Flow Duration: float64
+  Total Fwd Packets: float64
+  Total Backward Packets: float64
+  Flow Bytes/s: float64
+  Flow Packets/s: float64
+  Flow IAT Mean: float64
+  Fwd PSH Flags: float64
+  Bwd Packet Length Max: float64
+  Fwd Packet Length Mean: float64
+  Packet Length Mean: float64
+
+numerical_columns:
+  - Flow Duration
+  - Total Fwd Packets
+  - Total Backward Packets
+  - Flow Bytes/s
+  - Flow Packets/s
+  - Flow IAT Mean
+  - Fwd PSH Flags
+  - Bwd Packet Length Max
+  - Fwd Packet Length Mean
+  - Packet Length Mean
+
+target_column: Label
