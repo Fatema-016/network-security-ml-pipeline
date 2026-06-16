@@ -183,7 +183,7 @@ class ModelTrainer:
                     "test_precision" : test_metric.precision_score,
                     "test_recall"    : test_metric.recall_score,
                     "test_roc_auc"   : test_metric.roc_auc_score,
-                    "cv_f1"          : best_cv_f1,
+                    "cv_f1"          : best_cv_f1,      #cv_f1: The average F1 score across cross-validation folds. It measures how consistently model performs on different subsets of training data during hyperparameter tuning.
                 })
 
                 # Log model to MLflow
