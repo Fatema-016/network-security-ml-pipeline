@@ -6,11 +6,13 @@ from networksecurity.entity.config_entity import (
     TrainingPipelineConfig,
     DataIngestionConfig,
     DataValidationConfig,
-    DataTransformationConfig
+    DataTransformationConfig,
+    ModelTrainerConfig
 )
 from networksecurity.components.data_ingestion import DataIngestion
 from networksecurity.components.data_validation import DataValidation
 from networksecurity.components.data_transformation import DataTransformation
+from networksecurity.components.model_trainer import ModelTrainer
 
 load_dotenv()
 
@@ -50,22 +52,35 @@ if __name__ == "__main__":
         data_transformation_artifact = (
             data_transformation.initiate_data_transformation()
         )
-
         logger.info(
             f"Data Transformation Artifact: {data_transformation_artifact}"
         )
-        print(f"\n Data Transformation complete.")
+
+        # ── Model Trainer ──────────────────────────────────────
+        model_trainer_config   = ModelTrainerConfig(
+            training_pipeline_config
+        )
+        model_trainer          = ModelTrainer(
+            model_trainer_config,
+            data_transformation_artifact
+        )
+        model_trainer_artifact = model_trainer.initiate_model_trainer()
+
+        logger.info(
+            f"Model Trainer Artifact: {model_trainer_artifact}"
+        )
+        print(f"\n Model Trainer complete.")
         print(
-            f"   Train array : "
-            f"{data_transformation_artifact.transformed_train_file_path}"
+            f"   Best model : "
+            f"{model_trainer_artifact.trained_model_file_path}"
         )
         print(
-            f"   Test array  : "
-            f"{data_transformation_artifact.transformed_test_file_path}"
+            f"   Test F1    : "
+            f"{model_trainer_artifact.test_metric_artifact.f1_score:.4f}"
         )
         print(
-            f"   Preprocessor: "
-            f"{data_transformation_artifact.transformed_object_file_path}"
+            f"   Test Recall: "
+            f"{model_trainer_artifact.test_metric_artifact.recall_score:.4f}"
         )
 
     except Exception as e:
