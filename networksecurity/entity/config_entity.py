@@ -24,6 +24,8 @@ from networksecurity.constants.training_pipeline import (
     MODEL_EVALUATION_DIR_NAME,
     MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE,
     MODEL_EVALUATION_REPORT_NAME,
+    SAVED_MODEL_DIR,
+    MODEL_FILE_NAME,
     MODEL_PUSHER_DIR_NAME,
     MODEL_PUSHER_SAVED_MODEL_DIR,
     SCHEMA_FILE_PATH,
@@ -191,6 +193,9 @@ class ModelEvaluationConfig:
         )
         self.changed_threshold_score: float = MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE
         self.schema_file_path: str = SCHEMA_FILE_PATH
+        self.production_model_path = os.path.join(
+            SAVED_MODEL_DIR, MODEL_FILE_NAME
+        )
 
 
 @dataclass
