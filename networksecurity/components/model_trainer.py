@@ -48,22 +48,31 @@ class ModelTrainer:
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
-    def _setup_mlflow(self):
+    def _setup_mlflow(self, max_retries: int = 3):
         """
         Initialize MLflow tracking via DagsHub.
-        All experiment runs will be visible at:
-        https://dagshub.com/fatemahab.786/network-security-ml-pipeline.mlflow
+        Includes retry logic for transient network timeouts.
         """
-        try:
-            dagshub.init(
-                repo_owner="fatemahab.786",
-                repo_name="network-security-ml-pipeline",
-                mlflow=True
-            )
-            mlflow.set_experiment("NetworkSecurity-ModelTrainer")
-            logger.info("MLflow tracking initialized via DagsHub")
-        except Exception as e:
-            raise NetworkSecurityException(e, sys)
+        import time
+
+        for attempt in range(1, max_retries + 1):
+            try:
+                dagshub.init(
+                    repo_owner="fatemahab.786",
+                    repo_name="network-security-ml-pipeline",
+                    mlflow=True
+                )
+                mlflow.set_experiment("NetworkSecurity-ModelTrainer")
+                logger.info("MLflow tracking initialized via DagsHub")
+                return
+            except Exception as e:
+                logger.warning(
+                    f"DagsHub init attempt {attempt}/{max_retries} "
+                    f"failed: {e}"
+                )
+                if attempt == max_retries:
+                    raise NetworkSecurityException(e, sys)
+                time.sleep(10)
 
     def _get_models_and_params(self) -> dict:
         """

@@ -15,6 +15,9 @@ from networksecurity.components.data_validation import DataValidation
 from networksecurity.components.data_transformation import DataTransformation
 from networksecurity.components.model_trainer import ModelTrainer
 from networksecurity.components.model_evaluation import ModelEvaluation
+from networksecurity.entity.config_entity import ModelPusherConfig
+from networksecurity.components.model_pusher import ModelPusher
+
 
 load_dotenv()
 
@@ -111,6 +114,25 @@ if __name__ == "__main__":
             f"   SHAP plot saved in: "
             f"{model_evaluation_config.model_evaluation_dir}"
         )
+
+        # ── Model Pusher ────────────────────────────────────────
+        
+        model_pusher_config   = ModelPusherConfig(
+            training_pipeline_config
+        )
+        model_pusher          = ModelPusher(
+            model_pusher_config,
+            model_evaluation_artifact,
+            data_transformation_artifact
+        )
+        model_pusher_artifact = model_pusher.initiate_model_pusher()
+
+        logger.info(f"Model Pusher Artifact: {model_pusher_artifact}")
+        print(f"\n Model Pusher complete.")
+        print(f"   Saved model: {model_pusher_artifact.saved_model_path}")
+
+
+
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
