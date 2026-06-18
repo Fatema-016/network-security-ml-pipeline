@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Security ML Pipeline — Threat Detection Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0E14;
+    --panel: #11161F;
+    --panel-border: #1E2530;
+    --text-primary: #E4E8EF;
+    --text-secondary: #8B95A8;
+    --accent-safe: #00FF9C;
+    --accent-threat: #FF3B5C;
+    --accent-amber: #FFB627;
+    --accent-blue: #4D9FFF;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(77,159,255,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(0,255,156,0.03) 0%, transparent 40%);
+  }
+
+  
+
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--panel-border);
+    margin-bottom: 32px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(0,255,156,0.15), rgba(77,159,255,0.1));
+    border: 1px solid rgba(0,255,156,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-weight: 800;
+    color: var(--accent-safe);
+    font-size: 18px;
+  }
+
+  .brand-text h1 {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .brand-text p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    font-family: var(--mono);
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-safe);
+    background: rgba(0,255,156,0.08);
+    border: 1px solid rgba(0,255,156,0.25);
+    padding: 7px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-safe);
+    box-shadow: 0 0 8px var(--accent-safe);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── Layout ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 24px;
+  }
+  @media (max-width: 880px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel-title .eyebrow-num {
+    color: var(--accent-blue);
+  }
+
+  /* ── Form ── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .field input {
+    background: #0D1219;
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text-primary);
+    font-family: var(--mono);
+    font-size: 13px;
+    transition: border-color 0.15s ease;
+  }
+
+  .field input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+  }
+
+  .preset-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .preset-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .preset-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent-safe), #00C97D);
+    border: none;
+    border-radius: 8px;
+    color: #04140C;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+  }
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,255,156,0.25);
+  }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ── Result panel ── */
+  .result-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 380px;
+    color: var(--text-secondary);
+    text-align: center;
+    gap: 12px;
+  }
+
+  .result-empty-icon {
+    font-size: 32px;
+    opacity: 0.3;
+    font-family: var(--mono);
+  }
+
+  .result-empty p {
+    font-size: 13px;
+    max-width: 240px;
+    line-height: 1.6;
+  }
+
+  .verdict-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .verdict-banner.benign {
+    background: rgba(0,255,156,0.08);
+    border: 1px solid rgba(0,255,156,0.3);
+  }
+  .verdict-banner.attack {
+    background: rgba(255,59,92,0.08);
+    border: 1px solid rgba(255,59,92,0.35);
+  }
+
+  .verdict-label {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .verdict-banner.benign .verdict-label { color: var(--accent-safe); }
+  .verdict-banner.attack .verdict-label { color: var(--accent-threat); }
+
+  .verdict-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-family: var(--mono);
+  }
+
+  .confidence-ring {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    position: relative;
+  }
+
+  .shap-section-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .shap-bar-row {
+    margin-bottom: 14px;
+    opacity: 0;
+    animation: slideIn 0.4s ease forwards;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .shap-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    margin-bottom: 5px;
+  }
+
+  .shap-feature-name { color: var(--text-primary); }
+  .shap-feature-value {
+    color: var(--text-secondary);
+  }
+
+  .shap-bar-track {
+    height: 8px;
+    background: #0D1219;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .shap-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .shap-bar-fill.positive {
+    background: linear-gradient(90deg, var(--accent-threat), #FF7A8E);
+  }
+  .shap-bar-fill.negative {
+    background: linear-gradient(90deg, var(--accent-blue), #7BBCFF);
+  }
+
+  .no-shap-msg {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 16px;
+    background: #0D1219;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ── Footer strip ── */
+  .footer-strip {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 700px) {
+    .footer-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .stat-card .stat-value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-blue);
+  }
+  .stat-card .stat-label {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(4,20,12,0.3);
+    border-top-color: #04140C;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">NS</div>
+      <div class="brand-text">
+        <h1>NETWORK SECURITY ML PIPELINE</h1>
+        <p>Near-Real-Time Flow Threat Detection · XGBoost Model + SHAP Explainability.</p>
+      </div>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      <span id="status-text">Model Online</span>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- INPUT PANEL -->
+    <div class="panel">
+      <div class="panel-title">
+        <span><span class="eyebrow-num">01</span> &nbsp; Flow Record Input</span>
+      </div>
+
+      <div class="preset-row">
+        <button class="preset-btn" onclick="loadPreset('benign')">Load Benign Sample</button>
+        <button class="preset-btn" onclick="loadPreset('attack')">Load DDoS Sample</button>
+      </div>
+
+      <form id="predict-form">
+        <div class="field-row">
+          <div class="field">
+            <label>Flow Duration (μs)</label>
+            <input type="number" step="any" id="flow_duration" value="119366" required>
+          </div>
+          <div class="field">
+            <label>Total Fwd Packets</label>
+            <input type="number" step="any" id="total_fwd_packets" value="2" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Total Backward Packets</label>
+            <input type="number" step="any" id="total_backward_packets" value="1" required>
+          </div>
+          <div class="field">
+            <label>Flow Bytes/s</label>
+            <input type="number" step="any" id="flow_bytes_s" value="25.13" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Flow Packets/s</label>
+            <input type="number" step="any" id="flow_packets_s" value="0.084" required>
+          </div>
+          <div class="field">
+            <label>Flow IAT Mean</label>
+            <input type="number" step="any" id="flow_iat_mean" value="59683" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Fwd PSH Flags</label>
+            <input type="number" step="any" id="fwd_psh_flags" value="0" required>
+          </div>
+          <div class="field">
+            <label>Bwd Packet Length Max</label>
+            <input type="number" step="any" id="bwd_packet_length_max" value="0" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Fwd Packet Length Mean</label>
+            <input type="number" step="any" id="fwd_packet_length_mean" value="0" required>
+          </div>
+          <div class="field">
+            <label>Packet Length Mean</label>
+            <input type="number" step="any" id="packet_length_mean" value="0" required>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">Analyze Flow</button>
+      </form>
+    </div>
+
+    <!-- RESULT PANEL -->
+    <div class="panel">
+      <div class="panel-title">
+        <span><span class="eyebrow-num">02</span> &nbsp; Threat Assessment</span>
+      </div>
+
+      <div id="result-empty" class="result-empty">
+        <div class="result-empty-icon">⌁</div>
+        <p>Submit a flow record to run inference. The model will classify the connection and, if flagged as an attack, surface the top contributing features via SHAP.</p>
+      </div>
+
+      <div id="result-content" style="display:none;">
+        <div class="verdict-banner" id="verdict-banner">
+          <div>
+            <div class="verdict-label" id="verdict-label">—</div>
+            <div class="verdict-sub" id="verdict-sub">—</div>
+          </div>
+          <div class="confidence-ring" id="confidence-ring">—</div>
+        </div>
+
+        <div id="shap-area"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-strip">
+    <div class="stat-card">
+      <div class="stat-value">0.983</div>
+      <div class="stat-label">Test F1 Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">0.990</div>
+      <div class="stat-label">Test Recall</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">4,35,525</div>
+      <div class="stat-label">Training Records</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">9</div>
+      <div class="stat-label">Attack Types</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const presets = {
+    benign: {
+      flow_duration: 5200, total_fwd_packets: 3, total_backward_packets: 2,
+      flow_bytes_s: 412.5, flow_packets_s: 0.96, flow_iat_mean: 1733,
+      fwd_psh_flags: 0, bwd_packet_length_max: 64, fwd_packet_length_mean: 52, packet_length_mean: 58
+    },
+    attack: {
+      flow_duration: 119366, total_fwd_packets: 2, total_backward_packets: 1,
+      flow_bytes_s: 25.13, flow_packets_s: 0.084, flow_iat_mean: 59683,
+      fwd_psh_flags: 0, bwd_packet_length_max: 11680, fwd_packet_length_mean: 0, packet_length_mean: 7786
+    }
+  };
+
+  function loadPreset(name) {
+    const p = presets[name];
+    for (const key in p) {
+      const el = document.getElementById(key);
+      if (el) el.value = p[key];
+    }
+  }
+
+  document.getElementById('predict-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-spinner"></span>Analyzing...';
+
+    const payload = {
+      flow_duration: parseFloat(document.getElementById('flow_duration').value),
+      total_fwd_packets: parseFloat(document.getElementById('total_fwd_packets').value),
+      total_backward_packets: parseFloat(document.getElementById('total_backward_packets').value),
+      flow_bytes_s: parseFloat(document.getElementById('flow_bytes_s').value),
+      flow_packets_s: parseFloat(document.getElementById('flow_packets_s').value),
+      flow_iat_mean: parseFloat(document.getElementById('flow_iat_mean').value),
+      fwd_psh_flags: parseFloat(document.getElementById('fwd_psh_flags').value),
+      bwd_packet_length_max: parseFloat(document.getElementById('bwd_packet_length_max').value),
+      fwd_packet_length_mean: parseFloat(document.getElementById('fwd_packet_length_mean').value),
+      packet_length_mean: parseFloat(document.getElementById('packet_length_mean').value),
+    };
+
+    try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      renderResult(data);
+    } catch (err) {
+      alert('Prediction failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Analyze Flow';
+    }
+  });
+
+  function renderResult(data) {
+    document.getElementById('result-empty').style.display = 'none';
+    document.getElementById('result-content').style.display = 'block';
+
+    const isAttack = data.prediction === 'ATTACK';
+    const banner = document.getElementById('verdict-banner');
+    banner.className = 'verdict-banner ' + (isAttack ? 'attack' : 'benign');
+
+    document.getElementById('verdict-label').textContent = isAttack ? ' ATTACK DETECTED' : ' BENIGN TRAFFIC';
+    document.getElementById('verdict-sub').textContent = isAttack
+      ? 'Malicious flow pattern identified'
+      : 'No threat indicators found';
+
+    const ring = document.getElementById('confidence-ring');
+    const pct = Math.round(data.confidence * 100);
+    ring.style.background = isAttack
+      ? `conic-gradient(var(--accent-threat) ${pct*3.6}deg, #1E2530 0deg)`
+      : `conic-gradient(var(--accent-safe) ${pct*3.6}deg, #1E2530 0deg)`;
+    ring.textContent = pct + '%';
+
+    const shapArea = document.getElementById('shap-area');
+    shapArea.innerHTML = '';
+
+    if (isAttack && data.top_features && data.top_features.length > 0) {
+      const title = document.createElement('div');
+      title.className = 'shap-section-title';
+      title.innerHTML = ' Top Contributing Features (SHAP)';
+      shapArea.appendChild(title);
+
+      const maxAbs = Math.max(...data.top_features.map(f => Math.abs(f.shap_value)));
+
+      data.top_features.forEach((f, i) => {
+        const row = document.createElement('div');
+        row.className = 'shap-bar-row';
+        row.style.animationDelay = (i * 0.08) + 's';
+
+        const widthPct = Math.max(8, Math.abs(f.shap_value) / maxAbs * 100);
+        const isPositive = f.shap_value >= 0;
+
+        row.innerHTML = `
+          <div class="shap-bar-label">
+            <span class="shap-feature-name">${f.feature}</span>
+            <span class="shap-feature-value">${f.shap_value > 0 ? '+' : ''}${f.shap_value}</span>
+          </div>
+          <div class="shap-bar-track">
+            <div class="shap-bar-fill ${isPositive ? 'positive' : 'negative'}" style="width:${widthPct}%"></div>
+          </div>
+        `;
+        shapArea.appendChild(row);
+      });
+    } else {
+      const msg = document.createElement('div');
+      msg.className = 'no-shap-msg';
+      msg.textContent = 'No SHAP explanation needed — traffic classified as benign with no attack signal to explain.';
+      shapArea.appendChild(msg);
+    }
+  }
+</script>
+</body>
+</html>

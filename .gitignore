@@ -24,3 +24,4 @@ Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
 artifacts/
 test_connection.py
 saved_models/
+logs/predictions.log
