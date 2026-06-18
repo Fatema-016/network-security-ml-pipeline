@@ -8,14 +8,14 @@ from networksecurity.entity.config_entity import (
     DataValidationConfig,
     DataTransformationConfig,
     ModelTrainerConfig,
-    ModelEvaluationConfig
+    ModelEvaluationConfig,
+    ModelPusherConfig
 )
 from networksecurity.components.data_ingestion import DataIngestion
 from networksecurity.components.data_validation import DataValidation
 from networksecurity.components.data_transformation import DataTransformation
 from networksecurity.components.model_trainer import ModelTrainer
 from networksecurity.components.model_evaluation import ModelEvaluation
-from networksecurity.entity.config_entity import ModelPusherConfig
 from networksecurity.components.model_pusher import ModelPusher
 
 
