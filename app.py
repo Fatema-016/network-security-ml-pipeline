@@ -58,10 +58,42 @@ class NetworkFlowInput(BaseModel):
 # ── Load model ONCE at startup ──────
 prediction_pipeline = None
 
+import boto3
+
+S3_BUCKET = os.getenv("S3_BUCKET_NAME", "network-security-ml-pipeline-fatema")
+S3_MODEL_PREFIX = "models/"
+
+def download_models_from_s3():
+    """
+    Download model.pkl, preprocessor.pkl, shap_explainer.pkl
+    from S3 into saved_models/ before loading.
+
+    Uses IAM role attached to EC2 — boto3 automatically discovers
+    credentials, no access keys hardcoded anywhere.
+    """
+    os.makedirs("saved_models", exist_ok=True)
+    s3_client = boto3.client("s3")
+
+    files = ["model.pkl", "preprocessor.pkl", "shap_explainer.pkl"]
+    for filename in files:
+        local_path = os.path.join("saved_models", filename)
+        s3_key = f"{S3_MODEL_PREFIX}{filename}"
+        try:
+            s3_client.download_file(S3_BUCKET, s3_key, local_path)
+            logger.info(f"Downloaded {filename} from S3")
+        except Exception as e:
+            logger.warning(
+                f"Could not download {filename} from S3: {e}. "
+                f"Falling back to local saved_models/ if present."
+            )
+
+
 @app.on_event("startup")
 async def load_model():
     global prediction_pipeline
     try:
+        # downloading fresh artifacts from S3 first
+        download_models_from_s3()
         prediction_pipeline = PredictionPipeline()
         logger.info("Model loaded successfully at startup")
     except Exception as e:
