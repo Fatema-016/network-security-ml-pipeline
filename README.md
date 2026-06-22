@@ -109,7 +109,7 @@ The pipeline begins with raw flow records pulled from MongoDB Atlas and split in
 All training runs — across all three models and their hyperparameter combinations — are logged to MLflow via DagsHub, providing a complete, queryable record of every experiment.
 
 <p align="center">
-  <img src="screenshots/mlflow_experiment_runs.png" width="700" alt="MLflow Experiment Runs">
+  <img src="screenshots/MLflow_experiment_runs.png" width="700" alt="MLflow Experiment Runs">
 </p>
 
 ### 6.2 Logistic Regression — Metrics
